@@ -1,0 +1,7 @@
+[{
+  "class": "Ex",
+  "file": "src/Ex.php",
+  "fields": [
+    { "name": "hello", "type": "ip", "options": { "type": "any" } }
+  ]
+}]
