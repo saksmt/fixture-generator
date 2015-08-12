@@ -3,12 +3,15 @@
 namespace Smt\FixtureGenerator\Command;
 
 use Smt\Component\Console\Style\GentooStyle;
+use Smt\FixtureGenerator\Generator\FixtureGenerator;
+use Smt\FixtureGenerator\Reader\MappingReader;
 use Smt\Streams\Exception\StreamNotWritableException;
 use Smt\Streams\FileStream;
 use Smt\Streams\SymfonyOutputStream;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -23,8 +26,9 @@ class GenerateFixtureCommand extends Command
         $this
             ->setName('generate')
             ->setDescription('Generate fixtures file')
-            ->addArgument('MAPPING_FILE', InputArgument::REQUIRED, 'Path to mapping file')
-            ->addArgument('OUTPUT_FILE', InputArgument::OPTIONAL, 'Path to generated fixtures, default to stdout')
+            ->addArgument('MAPPING_FILES', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Path to mapping file')
+            ->addOption('output-file', 'o', InputOption::VALUE_REQUIRED, 'Path to generated fixtures, default to stdout')
+            ->addOption('fixtures-count', 'c', InputOption::VALUE_REQUIRED, 'Fixtures to generate', 5)
         ;
     }
 
@@ -32,16 +36,18 @@ class GenerateFixtureCommand extends Command
     {
         $out = new GentooStyle($out, $in);
         $outStream = new SymfonyOutputStream($out);
-        if ($in->hasArgument('OUTPUT_FILE')) {
+        if ($in->hasOption('output-file')) {
             try {
-                $outStream->redirect(FileStream::fromFilename($in->getArgument('OUTPUT_FILE')));
+                $outStream->redirect(FileStream::fromFilename($in->getOption('output-file')));
             } catch (StreamNotWritableException $e) {
                 $out->error('File is not writable!');
                 return;
             }
         }
-        $mapParser = new MapParser();
-        $generator = new FixtureGenerator($mapParser->parse($in->getArgument('MAPPING_FILE')));
-        $outStream->write($generator->generate());
+        $mappingFiles = $in->getArgument('MAPPING_FILES');
+        $mappingReader = new MappingReader($mappingFiles);
+        $mappingReader->read();
+        $generator = new FixtureGenerator($mappingReader->getMappings());
+        $outStream->write($generator->generate($in->getOption('fixtures-count')));
     }
 }

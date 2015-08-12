@@ -2,7 +2,9 @@
 
 namespace Smt\FixtureGenerator\Map\Visitor;
 
+use Smt\FixtureGenerator\Generator\GeneratorFactory;
 use Smt\FixtureGenerator\Map\ClassMap;
+use Smt\FixtureGenerator\Map\Visitor\Exception\NoAvailableFieldException;
 
 /**
  * Parses mapping for class
@@ -11,39 +13,47 @@ use Smt\FixtureGenerator\Map\ClassMap;
  */
 class ClassVisitor
 {
+    /**
+     * @var ClassMap Mapping
+     */
     private $map;
-    private $factory;
-    const METHOD_FILTER = \ReflectionMethod::IS_PUBLIC &
-    !\ReflectionMethod::IS_ABSTRACT &
-    !\ReflectionMethod::IS_STATIC;
 
     /**
-     * @var \ReflectionClass
+     * @var GeneratorFactory Generator
+     */
+    private $factory;
+
+    /**
+     * @const int Method filter
+     */
+    const METHOD_FILTER = \ReflectionMethod::IS_PUBLIC &
+        !\ReflectionMethod::IS_ABSTRACT &
+        !\ReflectionMethod::IS_STATIC;
+
+    /**
+     * @var \ReflectionClass Class reflection
      */
     private $reflection;
 
+    /**
+     * Constructor
+     * @param GeneratorFactory $factory Creates generators
+     */
     public function __construct(GeneratorFactory $factory)
     {
         $this->factory = $factory;
     }
 
     /**
-     * @param string $name
-     * @return string
+     * Create mapping from flat config
+     * @param array $mapping Flat config
+     * @return ClassMap Mapping
+     * @throws NoAvailableFieldException
      */
-    private static function unifyName($name)
-    {
-        return str_replace('_', '', strtolower($name));
-    }
-
-    public function setClassMap(ClassMap $map)
-    {
-        $this->map = $map;
-    }
-
     public function visit(array $mapping)
     {
-        require_once $mapping['file'];
+        $this->loadFile($mapping);
+        $this->map = new ClassMap();
         $this->reflection = new \ReflectionClass($mapping['class']);
         foreach ($mapping['fields'] as $fieldMapping) {
             $generator = $this->factory->create($fieldMapping['type'], $fieldMapping['options']);
@@ -55,20 +65,42 @@ class ClassVisitor
                 $this->map->addProperty($generator, $propertyName);
             } elseif ($this->checkSetter($fieldMapping)) {
                 $setterName = $this->getSetterName($fieldMapping);
-                $this->map->addSetter($generator, $setterName);
+                $this->map->addSetter([$generator], $setterName);
             } elseif ($this->reflection->hasMethod('__set')) {
                 $this->map->addProperty($generator, $fieldMapping['name']);
             } else {
                 throw new NoAvailableFieldException($fieldMapping['name']);
             }
         }
+        return $this->map;
     }
 
+    /**
+     * Unifies name for comparison
+     * @param string $name
+     * @return string
+     */
+    private static function unifyName($name)
+    {
+        return str_replace('_', '', strtolower($name));
+    }
+
+    /**
+     * Check if parameter is in constructor
+     * @param array $fieldMapping Config
+     * @return bool
+     */
     private function checkConstructor(array $fieldMapping)
     {
         return $this->getConstructorParamIndex($fieldMapping) !== false;
     }
 
+
+    /**
+     * Get index of parameter in constructor
+     * @param array $fieldMapping Config
+     * @return int|bool
+     */
     private function getConstructorParamIndex(array $fieldMapping)
     {
         return array_search(self::unifyName($fieldMapping['name']), array_map(function (\ReflectionParameter $param) {
@@ -76,19 +108,31 @@ class ClassVisitor
         }, $this->reflection->getConstructor()->getParameters()));
     }
 
+    /**
+     * Check if class has public field
+     * @param array $fieldMapping Config
+     * @return bool
+     */
     private function checkProperty(array $fieldMapping)
     {
         return $this->getPropertyIndex($fieldMapping) !== false;
     }
 
+    /**
+     * Get name of public field in class
+     * @param array $fieldMapping Config
+     * @return string
+     */
     private function getPropertyName(array $fieldMapping)
     {
-        return $this->reflection->getProperties(\ReflectionProperty::IS_PUBLIC)[$this->getPropertyIndex($fieldMapping)];
+        return $this->reflection->getProperties(\ReflectionProperty::IS_PUBLIC)[$this->getPropertyIndex($fieldMapping)]
+            ->getName();
     }
 
     /**
-     * @param array $fieldMapping
-     * @return mixed
+     * Get index of public property
+     * @param array $fieldMapping Config
+     * @return int|bool
      */
     private function getPropertyIndex(array $fieldMapping)
     {
@@ -97,6 +141,11 @@ class ClassVisitor
         }, $this->reflection->getProperties(\ReflectionProperty::IS_PUBLIC)));
     }
 
+    /**
+     * Get index of setter method
+     * @param array $fieldMapping Config
+     * @return int|bool
+     */
     private function getSetterIndex(array $fieldMapping)
     {
         return array_search('set' . self::unifyName($fieldMapping['name']), array_map(function (\ReflectionMethod $method) {
@@ -104,13 +153,34 @@ class ClassVisitor
         }, $this->reflection->getMethods(self::METHOD_FILTER)));
     }
 
+    /**
+     * Check if property can be set by setter method
+     * @param array $fieldMapping
+     * @return bool
+     */
     private function checkSetter(array $fieldMapping)
     {
         return $this->getSetterIndex($fieldMapping) !== false;
     }
 
+    /**
+     * Get name of property setter method
+     * @param array $fieldMapping Config
+     * @return string
+     */
     private function getSetterName(array $fieldMapping)
     {
-        return $this->reflection->getMethods(self::METHOD_FILTER)[$this->getSetterIndex($fieldMapping)];
+        return $this->reflection->getMethods(self::METHOD_FILTER)[$this->getSetterIndex($fieldMapping)]->getName();
+    }
+
+    /**
+     * Load class file if necessary
+     * @param array $mapping Config
+     */
+    private function loadFile($mapping)
+    {
+        if (isset($mapping['file']) && is_readable($mapping['file'])) {
+            require_once $mapping['file'];
+        }
     }
 }
