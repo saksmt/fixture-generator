@@ -1,6 +1,7 @@
 <?php
 
 namespace Smt\FixtureGenerator\Map;
+
 use Smt\FixtureGenerator\Generator\Generator;
 
 /**
@@ -31,14 +32,12 @@ class ClassMap
     private $className;
 
     /**
-     * Set class name
+     * Constructor
      * @param string $className Class name
-     * @return ClassMap This instance
      */
-    public function setClass($className)
+    public function __construct($className)
     {
         $this->className = $className;
-        return $this;
     }
 
     /**
@@ -91,7 +90,7 @@ class ClassMap
         $runGenerator = function (Generator $generator) {
             return $generator->generate(1);
         };
-        foreach (range(0, $count) as $index) {
+        for ($index = 0; $index < $count; $index++) {
             /* @noinspection PhpUnusedLocalVariableInspection */
             $variableName = $variableNameTemplate . $index;
             /* @noinspection PhpUnusedLocalVariableInspection */
@@ -102,8 +101,10 @@ class ClassMap
             $methods = array_map(function ($arguments) use ($runGenerator) {
                 return array_map($runGenerator, $arguments);
             }, $this->methods);
+            /* @noinspection PhpUnusedLocalVariableInspection */
+            $className = $this->className;
             ob_start();
-            require_once dirname(dirname(__DIR__)) . '/res/class.tpl';
+            require dirname(dirname(__DIR__)) . '/res/class.tpl';
             $code .= ob_get_contents();
             ob_end_clean();
         }
@@ -112,6 +113,6 @@ class ClassMap
         } else {
             $code .= 'return array_shift($data);';
         }
-        return $code . '})';
+        return $code . PHP_EOL . '})';
     }
 }

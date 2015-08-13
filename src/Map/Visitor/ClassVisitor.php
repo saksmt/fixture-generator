@@ -24,13 +24,6 @@ class ClassVisitor
     private $factory;
 
     /**
-     * @const int Method filter
-     */
-    const METHOD_FILTER = \ReflectionMethod::IS_PUBLIC &
-        !\ReflectionMethod::IS_ABSTRACT &
-        !\ReflectionMethod::IS_STATIC;
-
-    /**
      * @var \ReflectionClass Class reflection
      */
     private $reflection;
@@ -53,10 +46,14 @@ class ClassVisitor
     public function visit(array $mapping)
     {
         $this->loadFile($mapping);
-        $this->map = new ClassMap();
+        $this->map = new ClassMap($mapping['class']);
         $this->reflection = new \ReflectionClass($mapping['class']);
         foreach ($mapping['fields'] as $fieldMapping) {
-            $generator = $this->factory->create($fieldMapping['type'], $fieldMapping['options']);
+            $options = [];
+            if (isset($fieldMapping['options'])) {
+                $options = $fieldMapping['options'];
+            }
+            $generator = $this->factory->create($fieldMapping['type'], $options);
             if ($this->checkConstructor($fieldMapping)) {
                 $index = $this->getConstructorParamIndex($fieldMapping);
                 $this->map->addConstructorParam($generator, $index);
@@ -103,6 +100,9 @@ class ClassVisitor
      */
     private function getConstructorParamIndex(array $fieldMapping)
     {
+        if ($this->reflection->getConstructor() === null) {
+            return false;
+        }
         return array_search(self::unifyName($fieldMapping['name']), array_map(function (\ReflectionParameter $param) {
             return self::unifyName($param->getName());
         }, $this->reflection->getConstructor()->getParameters()));
@@ -150,7 +150,7 @@ class ClassVisitor
     {
         return array_search('set' . self::unifyName($fieldMapping['name']), array_map(function (\ReflectionMethod $method) {
             return self::unifyName($method->getName());
-        }, $this->reflection->getMethods(self::METHOD_FILTER)));
+        }, $this->reflection->getMethods(self::getMethodFilter())));
     }
 
     /**
@@ -170,7 +170,7 @@ class ClassVisitor
      */
     private function getSetterName(array $fieldMapping)
     {
-        return $this->reflection->getMethods(self::METHOD_FILTER)[$this->getSetterIndex($fieldMapping)]->getName();
+        return $this->reflection->getMethods(self::getMethodFilter())[$this->getSetterIndex($fieldMapping)]->getName();
     }
 
     /**
@@ -182,5 +182,14 @@ class ClassVisitor
         if (isset($mapping['file']) && is_readable($mapping['file'])) {
             require_once $mapping['file'];
         }
+    }
+
+    /**
+     * Filter const for methods
+     * @return int Method filter
+     */
+    private static function getMethodFilter()
+    {
+        return \ReflectionMethod::IS_PUBLIC;
     }
 }

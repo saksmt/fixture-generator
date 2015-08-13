@@ -1,4 +1,4 @@
-$<?= $variableName; ?> = new <?= $className; ?>(<?= implode(', ', $constructArgs); ?>);
+$<?= $variableName; ?> = new <?= $className; ?>(<?= implode(', ', $constructorArgs); ?>);
 <?php foreach ($properties as $propertyName => $property): ?>
     $<?= $variableName; ?>-><?= $propertyName; ?> = $property;
 <?php endforeach; ?>

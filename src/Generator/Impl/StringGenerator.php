@@ -3,6 +3,7 @@
 namespace Smt\FixtureGenerator\Generator\Impl;
 
 use Smt\FixtureGenerator\Generator\Generator;
+use Smt\FixtureGenerator\Util\Options;
 
 /**
  * String generator
@@ -16,12 +17,13 @@ class StringGenerator implements Generator
      * @var array Default configuration
      */
     private static $defaultConfig = [
-        'length' => 5,
+        'length' => ['from' => 5, 'to' => 10],
         'alphabet' => [
             'a-z',
             'A-Z',
             '0-9',
         ],
+        'raw' => false,
     ];
 
     /**
@@ -35,13 +37,20 @@ class StringGenerator implements Generator
     private $alphabet;
 
     /**
+     * @var bool Whether to generate just strings without valid PHP syntax
+     */
+    private $raw;
+
+
+    /**
      * Constructor
      * @param array $config Configuration
      */
     public function __construct(array $config)
     {
-        $realConfig = array_merge_recursive(self::$defaultConfig, $config);
+        $realConfig = Options::merge(self::$defaultConfig, $config);
         $this->length = $realConfig['length'];
+        $this->raw = $realConfig['raw'];
         $alphabet = [];
         foreach ($realConfig['alphabet'] as $diapason) {
             if (preg_match('/^(.*?)-(.*?)$/', $diapason)) {
@@ -74,10 +83,18 @@ class StringGenerator implements Generator
     private function doGenerate()
     {
         $string = '';
-        $alphabetLen = count($this->alphabet);
-        for ($i = 0; $i < $this->length; $i++) {
+        $format = '%s';
+        if (!$this->raw) {
+            $format = '\'%s\'';
+        }
+        $alphabetLen = count($this->alphabet) - 1;
+        $length = $this->length;
+        if (is_array($length)) {
+            $length = rand($length['from'], $length['to']);
+        }
+        for ($i = 0; $i < $length; $i++) {
             $string .= $this->alphabet[rand(0, $alphabetLen)];
         }
-        return $string;
+        return sprintf($format, $string);
     }
 }

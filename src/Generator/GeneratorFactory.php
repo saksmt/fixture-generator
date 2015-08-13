@@ -2,6 +2,8 @@
 
 namespace Smt\FixtureGenerator\Generator;
 
+use Smt\FixtureGenerator\Generator\Exception\GeneratorNotFoundException;
+use Smt\FixtureGenerator\Generator\Exception\UnsupportedGeneratorTypeException;
 use Smt\FixtureGenerator\Generator\Impl as Generators;
 
 /**
@@ -11,9 +13,16 @@ use Smt\FixtureGenerator\Generator\Impl as Generators;
  */
 class GeneratorFactory
 {
+    /**
+     * @var array List of registered generator classes
+     */
     protected static $registeredGenerators = [
         'string' => Generators\StringGenerator::class,
         'ip' => Generators\IpGenerator::class,
+        'choice' => Generators\ChoiceGenerator::class,
+        'date' => Generators\DateGenerator::class,
+        'bool' => Generators\BoolGenerator::class,
+        'url' => Generators\UrlGenerator::class,
     ];
 
     /**

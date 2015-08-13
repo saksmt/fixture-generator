@@ -3,11 +3,13 @@
 namespace Smt\FixtureGenerator\Generator\Impl;
 
 use Smt\FixtureGenerator\Generator\Generator;
+use Smt\FixtureGenerator\Util\Options;
 
 /**
  * IP-address generator
  * @package Smt\FixtureGenerator\Generator\Impl
  * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @SuppressWarnings(PHPMD.ShortVariable) $to, $ip
  */
 class IpGenerator implements Generator
 {
@@ -16,7 +18,7 @@ class IpGenerator implements Generator
      * @var string[] Default configuration
      */
     private static $defaultConfig = [
-        'verion' => 4,
+        'version' => 4,
         'from' => '0.0.0.0',
         'to' => '255.255.255.255',
     ];
@@ -42,7 +44,7 @@ class IpGenerator implements Generator
      */
     public function __construct(array $config)
     {
-        $realConfig = array_merge(self::$defaultConfig, $config);
+        $realConfig = Options::merge(self::$defaultConfig, $config);
         $this->version = $realConfig['version'];
         $this->from = $realConfig['from'];
         $this->to = $realConfig['to'];
@@ -72,7 +74,7 @@ class IpGenerator implements Generator
         $froms = explode($delimiter, $this->from);
         $tos = explode($delimiter, $this->to);
         foreach ($froms as $key => $from) {
-            $ip[] = rand($from, $tos[$key]);
+            $ip[] = rand(intval($from), intval($tos[$key]));
         }
         return '\'' . implode($delimiter, $ip) . '\'';
     }

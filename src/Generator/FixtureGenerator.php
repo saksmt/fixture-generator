@@ -3,6 +3,7 @@
 namespace Smt\FixtureGenerator\Generator;
 
 use Smt\FixtureGenerator\Map\Visitor\ClassVisitor;
+use Smt\FixtureGenerator\Map\Visitor\Exception\NoAvailableFieldException;
 
 /**
  * Generates fixtures based on mappings
@@ -55,6 +56,12 @@ class FixtureGenerator
         }
     }
 
+    /**
+     * Real generation
+     * @param array $mapping Mapping config
+     * @return string Code
+     * @throws NoAvailableFieldException
+     */
     private function doGenerate(array $mapping)
     {
         return $this->visitor->visit($mapping)->generate($this->count);
