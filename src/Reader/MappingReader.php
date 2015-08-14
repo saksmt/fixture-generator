@@ -7,7 +7,7 @@ use Smt\FixtureGenerator\Reader\Exception\UnreadableFileException;
 /**
  * Reads mappings from files
  * @package Smt\FixtureGenerator\Reader
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  */
 class MappingReader
 {

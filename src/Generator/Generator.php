@@ -5,7 +5,7 @@ namespace Smt\FixtureGenerator\Generator;
 /**
  * Data generator interface
  * @package Smt\FixtureGenerator\Generator
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  */
 interface Generator
 {

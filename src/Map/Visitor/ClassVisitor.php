@@ -9,7 +9,7 @@ use Smt\FixtureGenerator\Map\Visitor\Exception\NoAvailableFieldException;
 /**
  * Parses mapping for class
  * @package Smt\FixtureGenerator\Map\Visitor
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  */
 class ClassVisitor
 {

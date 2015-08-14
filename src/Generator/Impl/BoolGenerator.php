@@ -7,7 +7,7 @@ use Smt\FixtureGenerator\Generator\Generator;
 /**
  * Generate boolean value
  * @package Smt\FixtureGenerator\Generator\Impl
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  */
 class BoolGenerator implements Generator
 {

@@ -5,7 +5,7 @@ namespace Smt\FixtureGenerator\Util;
 /**
  *
  * @package Smt\FixtureGenerator\Util
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  */
 class Options
 {

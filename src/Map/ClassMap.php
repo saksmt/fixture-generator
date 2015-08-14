@@ -7,7 +7,7 @@ use Smt\FixtureGenerator\Generator\Generator;
 /**
  * Represents mapping to class
  * @package Smt\FixtureGenerator\Map
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  */
 class ClassMap
 {

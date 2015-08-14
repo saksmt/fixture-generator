@@ -7,7 +7,7 @@ use Smt\FixtureGenerator\Generator\Generator;
 /**
  * Generates urls
  * @package Smt\FixtureGenerator\Generator\Impl
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  */
 class UrlGenerator implements Generator
 {

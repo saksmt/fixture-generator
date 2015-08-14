@@ -8,7 +8,7 @@ use Smt\FixtureGenerator\Util\Options;
 /**
  * Generate DateTime
  * @package Smt\FixtureGenerator\Generator\Impl
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  * @SuppressWarnings(PHPMD.ShortVariable) $to
  */
 class DateGenerator implements Generator

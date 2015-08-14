@@ -8,7 +8,7 @@ use Smt\FixtureGenerator\Util\Options;
 /**
  * String generator
  * @package Smt\FixtureGenerator\Generator\Impl
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  */
 class StringGenerator implements Generator
 {

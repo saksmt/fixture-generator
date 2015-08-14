@@ -5,7 +5,7 @@ namespace Smt\FixtureGenerator\Reader\Exception;
 /**
  * Thrown when mapping file is not readable
  * @package Smt\FixtureGenerator\Reader\Exception
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  */
 class UnreadableFileException extends \Exception
 {

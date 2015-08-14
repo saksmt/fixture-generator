@@ -9,7 +9,7 @@ use Smt\FixtureGenerator\Generator\Impl as Generators;
 /**
  * Generator factory
  * @package Smt\FixtureGenerator\Generator
- * @author Kirill Saksin <kirill.saksin@billing.ru>
+ * @author Kirill Saksin <kirillsaksin@billing.ru>
  */
 class GeneratorFactory
 {

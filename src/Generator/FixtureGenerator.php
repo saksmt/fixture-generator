@@ -8,7 +8,7 @@ use Smt\FixtureGenerator\Map\Visitor\Exception\NoAvailableFieldException;
 /**
  * Generates fixtures based on mappings
  * @package Smt\FixtureGenerator\Generator
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  */
 class FixtureGenerator
 {

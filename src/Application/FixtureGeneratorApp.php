@@ -8,7 +8,7 @@ use Symfony\Component\Console\Application;
 /**
  * Fixture generator application
  * @package Smt\FixtureGenerator\Application
- * @author Kirill Saksin <kirill.saksin@yandex.ru>
+ * @author Kirill Saksin <kirillsaksin@yandex.ru>
  */
 class FixtureGeneratorApp extends Application
 {
