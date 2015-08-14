@@ -69,7 +69,7 @@ class DateGenerator implements Generator
      */
     private function doGenerate()
     {
-        return 'new \DateTime(' . rand($this->from, $this->to) . ')';
+        return 'new \DateTime(\'@' . rand($this->from, $this->to) . '\')';
     }
 
     /**
